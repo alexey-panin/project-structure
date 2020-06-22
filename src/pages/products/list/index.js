@@ -8,11 +8,6 @@ export default class Page {
   subElements = {};
   components = {};
 
-/*   async updateTableComponent (from, to) {
-    const data = await fetchJson(`${process.env.BACKEND_URL}api/dashboard/bestsellers?_start=1&_end=20&from=${from.toISOString()}&to=${to.toISOString()}`);
-    this.components.sortableTable.addRows(data);
-  } */
-
   async initComponents () {
     const to = new Date();
     const from = new Date(to.getTime() - (30 * 24 * 60 * 60 * 1000));
