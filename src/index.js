@@ -15,3 +15,11 @@ router
   .addRoute(/^404\/?$/, 'error404')
   .setNotFoundPagePath('error404')
   .listen();
+
+const toggleSidebar = (e) => {
+  e.preventDefault();
+  document.body.classList.toggle("is-collapsed-sidebar");
+}
+
+const sidebarToggler = document.body.querySelector(".sidebar__toggler");
+sidebarToggler.addEventListener("click", toggleSidebar);
