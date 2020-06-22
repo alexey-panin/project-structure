@@ -16,7 +16,7 @@ export default class Page {
       const productID = strippedPath.slice(9);
       productForm = new ProductForm(productID);
     }
-    
+
     await productForm.render();
     this.components.productForm = productForm;
   }
@@ -29,8 +29,10 @@ export default class Page {
           <a href="/products" class="link">Товары</a> / Добавить
         </h1>
       </div>
-      <div data-element="productForm">
-        <!-- product-form component -->
+      <div class="content-box">
+        <div data-element="productForm">
+          <!-- product-form component -->
+        </div>
       </div>
     </div>`;
   }
