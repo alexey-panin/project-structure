@@ -1,7 +1,7 @@
+import SortableList from '../../components/sortable-list/index.js';
 import escapeHtml from '../../utils/escape-html.js';
 import fetchJson from '../../utils/fetch-json.js';
 
-//TODO: change to values from env variables
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID;
 const BACKEND_URL = process.env.BACKEND_URL;
 
@@ -164,6 +164,8 @@ export default class ProductForm {
 
     this.subElements = this.getSubElements();
 
+    this.createImagesList();
+
     this.initEventListeners();
 
     return this.element;
@@ -265,39 +267,10 @@ export default class ProductForm {
       <div class="form-group form-group__wide" data-element="sortable-list-container">
         <label class="form-label">Фото</label>
         <div data-element="imageListContainer">
-          ${this.getSortableImageListTemplate(productData)}
         </div>
         <button type="button" name="uploadImage" class="button-primary-outline"><span>Загрузить</span></button>
       </div>
     `;
-  }
-
-  getSortableImageListTemplate(productData) {
-    return `
-      <ul class="sortable-list">
-        ${this.getSortableImageListRowTemplate(productData)}
-      </ul>
-    `;
-  }
-
-  getSortableImageListRowTemplate({images}) {
-    return images
-      .map( ({url, source}) => {
-        return `
-          <li class="products-edit__imagelist-item sortable-list__item" style="">
-            <input type="hidden" name="url" value="${url}">
-            <input type="hidden" name="source" value="${source}">
-            <span>
-              <img src="icon-grab.svg" data-grab-handle alt="grab">
-              <img class="sortable-table__cell-img" alt="${source}" src="${url}">
-              <span>${source}</span>
-            </span>
-            <button type="button">
-              <img src="icon-trash.svg" data-delete-handle alt="delete">
-            </button>
-          </li>
-        `;
-      }).join("");
   }
 
   getProductCategoriesTemplate(categories, productData) {
@@ -357,6 +330,41 @@ export default class ProductForm {
         </select>
       </div>
     `;
+  }
+
+  createImagesList() {
+    if (!this.productData) {
+      return;
+    };
+    const {imageListContainer} = this.subElements;
+    const [productData] = this.productData;
+    const {images} = productData;
+
+    const items = images.map(({url, source}) => this.getImageItem(url, source));
+
+    const sortableList = new SortableList({
+      items
+    });
+
+    imageListContainer.append(sortableList.element);
+  }
+
+  getImageItem(url, name) {
+    const wrapper = document.createElement('div');
+
+    wrapper.innerHTML = `
+      <li class="products-edit__imagelist-item sortable-list__item">
+        <span>
+          <img src="icon-grab.svg" data-grab-handle alt="grab">
+          <img class="sortable-table__cell-img" alt="${escapeHtml(name)}" src="${escapeHtml(url)}">
+          <span>${escapeHtml(name)}</span>
+        </span>
+        <button type="button">
+          <img src="icon-trash.svg" alt="delete" data-delete-handle>
+        </button>
+      </li>`;
+
+    return wrapper.firstElementChild;
   }
 
   getCreateProductFormTemplate(categories) {
