@@ -6,7 +6,17 @@ export default class Page {
   components = {};
 
   async initComponents () {
-    const productForm = new ProductForm();
+    let productForm;
+    const strippedPath = decodeURI(window.location.pathname)
+      .replace(/^\/|\/$/, '');
+
+    if (strippedPath.includes("products/add")) {
+      productForm = new ProductForm();
+    } else {
+      const productID = strippedPath.slice(9);
+      productForm = new ProductForm(productID);
+    }
+    
     await productForm.render();
     this.components.productForm = productForm;
   }
