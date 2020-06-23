@@ -1,13 +1,25 @@
 import Categories from '../../components/categories/index.js';
+import escapeHtml from '../../utils/escape-html.js';
+import fetchJson from '../../utils/fetch-json.js';
+
+const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID;
+const BACKEND_URL = process.env.BACKEND_URL;
+const CATEGORIES_URL = "api/rest/categories";
 
 export default class Page {
   element;
   subElements = {};
   components = {};
+  data = {};
+
+  async getData () {
+    const fetchUrl = `${BACKEND_URL}${CATEGORIES_URL}?_sort=weight&_refs=subcategory`
+    this.data = await fetchJson(fetchUrl);
+  }
 
   async initComponents () {
 
-    const categories = new Categories();
+    const categories = new Categories(this.data);
     this.components.categories = categories;
   }
 
@@ -15,12 +27,10 @@ export default class Page {
     return `
     <div class="categories">
       <div class="content__top-panel">
-        <h1 class="page-title">Список товаров</h1>
+        <h1 class="page-title">Категории товаров</h1>
       </div>
-      <div class="content-box">
-        <div data-element="categories">
-          <!-- categories component -->
-        </div>
+      <div data-element="categories">
+        <!-- categories component -->
       </div>
     </div>`;
   }
@@ -32,6 +42,8 @@ export default class Page {
 
     this.element = element.firstElementChild;
     this.subElements = this.getSubElements(this.element);
+
+    await this.getData();
 
     await this.initComponents();
 
