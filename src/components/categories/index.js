@@ -8,7 +8,6 @@ export default class Categories {
   }
 
   render() {
-    console.log(this.data);
     const wrapper = document.createElement('div');
 
     wrapper.innerHTML = this.getCategoriesContainerTemplate(this.data);
@@ -17,9 +16,7 @@ export default class Categories {
 
     this.element = element;
 
-    this.getSubElements(this.element);
-
-    console.log(this.getCategoriesContainerTemplate(this.data));
+    this.subElements = this.getSubElements(this.element);
   }
 
   getCategoriesContainerTemplate(data) {
@@ -37,7 +34,7 @@ export default class Categories {
           <div class="category" data-id="${item.id}">
             <header class="category__header">${item.title}</header>
             <div class="category__body">
-              <div class="subcategory-list">
+              <div class="subcategory-list" data-element="subcategoryList">
                 ${this.getSubcategoryList(item)}
               </div>
             </div>
@@ -69,6 +66,7 @@ export default class Categories {
 
   getSubElements(element) {
     const elements = element.querySelectorAll('[data-element]');
+    console.log(elements);
 
     return [...elements].reduce((accum, subElement) => {
       accum[subElement.dataset.element] = subElement;
@@ -85,8 +83,4 @@ export default class Categories {
     this.remove();
     this.subElements = {};
   }
-
-
-
-
 }

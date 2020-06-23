@@ -17,7 +17,7 @@ export default class Page {
     this.data = await fetchJson(fetchUrl);
   }
 
-  async initComponents () {
+  initComponents () {
 
     const categories = new Categories(this.data);
     this.components.categories = categories;
@@ -45,7 +45,7 @@ export default class Page {
 
     await this.getData();
 
-    await this.initComponents();
+    this.initComponents();
 
     this.renderComponents();
 
@@ -60,8 +60,8 @@ export default class Page {
     });
   }
 
-  getSubElements ($element) {
-    const elements = $element.querySelectorAll('[data-element]');
+  getSubElements (element) {
+    const elements = element.querySelectorAll('[data-element]');
 
     return [...elements].reduce((accum, subElement) => {
       accum[subElement.dataset.element] = subElement;
