@@ -2,6 +2,17 @@ export default class Categories {
   
   element; //html element
 
+  onClick = (event) => {
+    event.preventDefault();
+    const {target} = event;
+    const isHeader = target.classList.contains("category__header");
+    const parentDiv = target.closest("div");
+
+    if (isHeader) {
+      parentDiv.classList.toggle("category_open");
+    }
+  }
+
   constructor(data) {
     this.data = data;
     this.render();    
@@ -17,6 +28,12 @@ export default class Categories {
     this.element = element;
 
     this.subElements = this.getSubElements(this.element);
+
+    this.initEventListeners();
+  }
+
+  initEventListeners() {
+    this.element.addEventListener("click", this.onClick);
   }
 
   getCategoriesContainerTemplate(data) {
@@ -31,7 +48,7 @@ export default class Categories {
     return data
       .map(item => {
         return `
-          <div class="category" data-id="${item.id}">
+          <div class="category category_open" data-id="${item.id}">
             <header class="category__header">${item.title}</header>
             <div class="category__body">
               <div class="subcategory-list" data-element="subcategoryList">
@@ -66,7 +83,6 @@ export default class Categories {
 
   getSubElements(element) {
     const elements = element.querySelectorAll('[data-element]');
-    console.log(elements);
 
     return [...elements].reduce((accum, subElement) => {
       accum[subElement.dataset.element] = subElement;
