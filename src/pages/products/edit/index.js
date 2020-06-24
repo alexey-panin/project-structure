@@ -5,18 +5,13 @@ export default class Page {
   subElements = {};
   components = {};
 
+  constructor(match) {
+    this.match = match;
+  }
+
   async initComponents () {
-    let productForm;
-    const strippedPath = decodeURI(window.location.pathname)
-      .replace(/^\/|\/$/, '');
-
-    if (strippedPath.includes("products/add")) {
-      productForm = new ProductForm();
-    } else {
-      const productID = strippedPath.slice(9);
-      productForm = new ProductForm(productID);
-    }
-
+    const [, productId] = this.match;
+    const productForm = new ProductForm(productId);
     await productForm.render();
     this.components.productForm = productForm;
   }
