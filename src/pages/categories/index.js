@@ -1,5 +1,4 @@
 import Categories from '../../components/categories/index.js';
-import escapeHtml from '../../utils/escape-html.js';
 import fetchJson from '../../utils/fetch-json.js';
 
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID;

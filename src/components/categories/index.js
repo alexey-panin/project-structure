@@ -1,3 +1,5 @@
+import escapeHtml from '../../utils/escape-html.js';
+
 export default class Categories {
   
   element; //html element
@@ -49,7 +51,7 @@ export default class Categories {
       .map(item => {
         return `
           <div class="category category_open" data-id="${item.id}">
-            <header class="category__header">${item.title}</header>
+            <header class="category__header">${escapeHtml(item.title)}</header>
             <div class="category__body">
               <div class="subcategory-list" data-element="subcategoryList">
                 ${this.getSubcategoryList(item)}
@@ -73,7 +75,7 @@ export default class Categories {
       .map( ({ id, title, count }) => {
         return `
         <li class="categories__sortable-list-item sortable-list__item" data-grab-handle="" data-id="${id}">
-          <strong>${title}</strong>
+          <strong>${escapeHtml(title)}</strong>
           <span><b>${count}</b> products</span>
         </li>
         `;
