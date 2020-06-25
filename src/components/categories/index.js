@@ -16,10 +16,13 @@ export default class Categories {
     }
   }
 
+  onSortableListReorder(event) {
+    console.log(event);
+  }
+
   constructor(data) {
     this.data = data;
     this.render();
-    this.createSubcategoryList();   
   }
 
   render() {
@@ -31,16 +34,16 @@ export default class Categories {
 
     this.element = element;
 
-    this.subElements = this.getSubElements(this.element);
-    console.log(this.subElements);
+    this.appendSubcategoryDraggableList();
+
+    //this.subElements = this.getSubElements(this.element);
 
     this.initEventListeners();
-
-    console.log(this.data);
   }
 
   initEventListeners() {
     this.element.addEventListener("click", this.onClick);
+    this.element.addEventListener("sortable-list-reorder", this.onSortableListReorder);
   }
 
   getCategoriesContainerTemplate(data) {
@@ -59,7 +62,6 @@ export default class Categories {
             <header class="category__header">${escapeHtml(item.title)}</header>
             <div class="category__body">
               <div class="subcategory-list" data-element="subcategoryList">
-                ${this.getSubcategoryList(item)}
               </div>
             </div>
           </div>
@@ -67,41 +69,15 @@ export default class Categories {
       }).join("");
   }
 
-  getSubcategoryList(item) {
-    return `
-      <ul class="sortable-list">
-        ${this.getSortableListItem(item)}
-      </ul>
-    `;
-  }
-
-  getSortableListItem({subcategories}) {
-    return subcategories
-      .map( ({ id, title, count }) => {
-        return `
-        <li class="categories__sortable-list-item sortable-list__item" data-grab-handle="" data-id="${id}">
-          <strong>${escapeHtml(title)}</strong>
-          <span><b>${count}</b> products</span>
-        </li>
-        `;
-      }).join("");
-  }
-
-  ///////////////////////////////////////
-
   createSubcategoryList() {
+    const itemsList = [];
     this.data.forEach(element => {
       const {subcategories} = element;
       const items = subcategories.map(({ id, title, count }) => this.getSortableListItemTemplate(id, title, count));
-      console.log(items);
-      
+      itemsList.push(items);
     });
 
-    
-
-/*     const sortableList = new SortableList({
-      items
-    }); */
+    return itemsList;
   }
 
   getSortableListItemTemplate(id, title, count) {
@@ -116,18 +92,25 @@ export default class Categories {
     return wrapper.firstElementChild;
   }
 
-  ///////////////////////////////////////
+  appendSubcategoryDraggableList() {
+    const subcategotyListArr = this.createSubcategoryList();
+    const subcategoryElementArr = this.element.querySelectorAll("[data-element='subcategoryList']");
 
-  getSubElements(element) {
+    for (let i=0; i < subcategoryElementArr.length; i++) {
+      const sortableList = new SortableList({ items: subcategotyListArr[i] });
+      subcategoryElementArr[i].append(sortableList.element);
+    }
+  }
+
+/*   getSubElements(element) {
     const elements = element.querySelectorAll('[data-element]');
-    console.log(elements);
 
     return [...elements].reduce((accum, subElement) => {
       accum[subElement.dataset.element] = subElement;
 
       return accum;
     }, {});
-  }
+  } */
 
   remove() {
     this.element.remove();
@@ -136,6 +119,6 @@ export default class Categories {
   destroy() {
     this.element.removeEventListener("click", this.onClick);
     this.remove();
-    this.subElements = {};
+    //this.subElements = {};
   }
 }
