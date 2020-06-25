@@ -11,7 +11,9 @@ export default class Page {
   data = {};
 
   async getData () {
-    const fetchUrl = `${BACKEND_URL}${CATEGORIES_URL}?_sort=weight&_refs=subcategory`
+    const fetchUrl = new URL(CATEGORIES_URL, BACKEND_URL);
+    fetchUrl.searchParams.set("_sort", "weight");
+    fetchUrl.searchParams.set("_refs", "subcategory");
     this.data = await fetchJson(fetchUrl);
   }
 
