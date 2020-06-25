@@ -1,11 +1,15 @@
 import escapeHtml from '../../utils/escape-html.js';
+import fetchJson from '../../utils/fetch-json.js';
 import SortableList from '../../components/sortable-list/index.js';
+
+const BACKEND_URL = process.env.BACKEND_URL;
+const SUBCATEGORIES_URL = "api/rest/subcategories";
 
 export default class Categories {
   
   element; //html element
 
-  onClick = (event) => {
+  toggleAccordion = (event) => {
     event.preventDefault();
     const {target} = event;
     const isHeader = target.classList.contains("category__header");
@@ -16,13 +20,41 @@ export default class Categories {
     }
   }
 
-  onSortableListReorder(event) {
-    console.log(event);
+  onSortableListReorder = (event) => {
+    const { target } = event;
+    const { children } = target;
+
+    const payload = [];
+
+    [...children].forEach((child, index) => {
+      const childId = child.dataset.id;
+      payload.push(
+        {
+          id: childId,
+          weight: index
+        }
+      );
+    });
+
+    this.send(payload);
   }
 
   constructor(data) {
     this.data = data;
     this.render();
+  }
+
+  send(payload) {
+    const url = new URL (SUBCATEGORIES_URL, BACKEND_URL);
+    const requestParams = {
+      method: 'PATCH',
+      headers:             {
+        'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: JSON.stringify(payload)
+    }
+
+    fetchJson(url, requestParams);
   }
 
   render() {
@@ -42,8 +74,13 @@ export default class Categories {
   }
 
   initEventListeners() {
-    this.element.addEventListener("click", this.onClick);
+    this.element.addEventListener("click", this.toggleAccordion);
     this.element.addEventListener("sortable-list-reorder", this.onSortableListReorder);
+  }
+
+  removeEventListeners() {
+    this.element.removeEventListener("click", this.toggleAccordion);
+    this.element.removeEventListener("sortable-list-reorder", this.onSortableListReorder);
   }
 
   getCategoriesContainerTemplate(data) {
@@ -71,6 +108,7 @@ export default class Categories {
 
   createSubcategoryList() {
     const itemsList = [];
+    
     this.data.forEach(element => {
       const {subcategories} = element;
       const items = subcategories.map(({ id, title, count }) => this.getSortableListItemTemplate(id, title, count));
@@ -117,7 +155,7 @@ export default class Categories {
   }
 
   destroy() {
-    this.element.removeEventListener("click", this.onClick);
+    this.removeEventListeners();
     this.remove();
     //this.subElements = {};
   }
