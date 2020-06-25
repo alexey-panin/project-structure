@@ -1,7 +1,6 @@
 import Categories from '../../components/categories/index.js';
 import fetchJson from '../../utils/fetch-json.js';
 
-const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID;
 const BACKEND_URL = process.env.BACKEND_URL;
 const CATEGORIES_URL = "api/rest/categories";
 
@@ -40,6 +39,7 @@ export default class Page {
     element.innerHTML = this.template;
 
     this.element = element.firstElementChild;
+    
     this.subElements = this.getSubElements(this.element);
 
     await this.getData();

@@ -1,4 +1,5 @@
 import escapeHtml from '../../utils/escape-html.js';
+import SortableList from '../../components/sortable-list/index.js';
 
 export default class Categories {
   
@@ -17,7 +18,8 @@ export default class Categories {
 
   constructor(data) {
     this.data = data;
-    this.render();    
+    this.render();
+    this.createSubcategoryList();   
   }
 
   render() {
@@ -30,8 +32,11 @@ export default class Categories {
     this.element = element;
 
     this.subElements = this.getSubElements(this.element);
+    console.log(this.subElements);
 
     this.initEventListeners();
+
+    console.log(this.data);
   }
 
   initEventListeners() {
@@ -80,11 +85,42 @@ export default class Categories {
         </li>
         `;
       }).join("");
-
   }
+
+  ///////////////////////////////////////
+
+  createSubcategoryList() {
+    this.data.forEach(element => {
+      const {subcategories} = element;
+      const items = subcategories.map(({ id, title, count }) => this.getSortableListItemTemplate(id, title, count));
+      console.log(items);
+      
+    });
+
+    
+
+/*     const sortableList = new SortableList({
+      items
+    }); */
+  }
+
+  getSortableListItemTemplate(id, title, count) {
+    const wrapper = document.createElement('div');
+
+    wrapper.innerHTML = `
+      <li class="categories__sortable-list-item sortable-list__item" data-grab-handle="" data-id="${id}">
+        <strong>${escapeHtml(title)}</strong>
+        <span><b>${count}</b> products</span>
+      </li>`;
+
+    return wrapper.firstElementChild;
+  }
+
+  ///////////////////////////////////////
 
   getSubElements(element) {
     const elements = element.querySelectorAll('[data-element]');
+    console.log(elements);
 
     return [...elements].reduce((accum, subElement) => {
       accum[subElement.dataset.element] = subElement;
@@ -98,6 +134,7 @@ export default class Categories {
   }
 
   destroy() {
+    this.element.removeEventListener("click", this.onClick);
     this.remove();
     this.subElements = {};
   }
