@@ -1,6 +1,7 @@
 import escapeHtml from '../../utils/escape-html.js';
 import fetchJson from '../../utils/fetch-json.js';
 import SortableList from '../../components/sortable-list/index.js';
+import NotificationMessage from '../../components/notification/index.js';
 
 const BACKEND_URL = process.env.BACKEND_URL;
 const SUBCATEGORIES_URL = "api/rest/subcategories";
@@ -20,7 +21,7 @@ export default class Categories {
     }
   }
 
-  onSortableListReorder = (event) => {
+  onSortableListReorder = async (event) => {
     const { target } = event;
     const { children } = target;
 
@@ -36,7 +37,12 @@ export default class Categories {
       );
     });
 
-    this.send(payload);
+    try {
+      await this.send(payload);
+      this.showNotificationMessage("Category order saved", {type: "success"});
+    } catch (error) {
+      this.showNotificationMessage(`Server side error! ${error}`, {type: "error", duration: 3000});
+    }
   }
 
   constructor(data) {
@@ -44,7 +50,15 @@ export default class Categories {
     this.render();
   }
 
-  send(payload) {
+  showNotificationMessage(message, {duration = 2000, type} = {}) {
+    const notificationMessage = new NotificationMessage(message, {
+      duration: duration,
+      type: type
+    });
+    notificationMessage.show();
+  }
+
+  async send(payload) {
     const url = new URL (SUBCATEGORIES_URL, BACKEND_URL);
     const requestParams = {
       method: 'PATCH',
@@ -54,7 +68,7 @@ export default class Categories {
       body: JSON.stringify(payload)
     }
 
-    fetchJson(url, requestParams);
+    await fetchJson(url, requestParams);
   }
 
   render() {
@@ -67,8 +81,6 @@ export default class Categories {
     this.element = element;
 
     this.appendSubcategoryDraggableList();
-
-    //this.subElements = this.getSubElements(this.element);
 
     this.initEventListeners();
   }
@@ -108,7 +120,7 @@ export default class Categories {
 
   createSubcategoryList() {
     const itemsList = [];
-    
+
     this.data.forEach(element => {
       const {subcategories} = element;
       const items = subcategories.map(({ id, title, count }) => this.getSortableListItemTemplate(id, title, count));
@@ -140,16 +152,6 @@ export default class Categories {
     }
   }
 
-/*   getSubElements(element) {
-    const elements = element.querySelectorAll('[data-element]');
-
-    return [...elements].reduce((accum, subElement) => {
-      accum[subElement.dataset.element] = subElement;
-
-      return accum;
-    }, {});
-  } */
-
   remove() {
     this.element.remove();
   }
@@ -157,6 +159,5 @@ export default class Categories {
   destroy() {
     this.removeEventListeners();
     this.remove();
-    //this.subElements = {};
   }
 }

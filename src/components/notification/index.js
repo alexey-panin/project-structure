@@ -18,13 +18,9 @@ export default class NotificationMessage {
 
   get template() {
     return `
-      <div class="notification ${this.type}" style="--value:${this.duration / 1000}s">
-        <div class="timer"></div>
-        <div class="inner-wrapper">
-            <div class="notification-header">${this.type}</div>
-            <div class="notification-body">
-              ${this.message}
-            </div>
+      <div class="notification notification_${this.type} show" style="--value:${this.duration / 1000}s">
+        <div class="notification__content">
+          ${this.message}
         </div>
       </div>
     `;
