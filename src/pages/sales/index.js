@@ -16,6 +16,8 @@ export default class Page {
   async updateTableComponent (from, to) {
     const data = await fetchJson(`${process.env.BACKEND_URL}api/rest/orders?createdAt_gte=${from.toISOString()}&createdAt_lte=${to.toISOString()}&_sort=createdAt&_order=desc&_start=0&_end=30`);
     this.components.sortableTable.addRows(data);
+    this.components.sortableTable.from = from.toISOString();
+    this.components.sortableTable.to = to.toISOString();
   }
 
   async initComponents () {
@@ -28,7 +30,13 @@ export default class Page {
     });
 
     const sortableTable = new SortableTable(header, {
-      url: `api/rest/orders?createdAt_gte=${from.toISOString()}&createdAt_lte=${to.toISOString()}&_sort=createdAt&_order=desc&_start=0&_end=30`
+      url: "api/rest/orders",
+      from: from.toISOString(),
+      to: to.toISOString(),
+      sorted: {
+        id: "createdAt",
+        order: 'desc'
+      }
     });
 
     this.components.sortableTable = sortableTable;

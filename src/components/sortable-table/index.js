@@ -68,7 +68,9 @@ export default class SortableTable {
     isSortLocally = false,
     step = 20,
     start = 1,
-    end = start + step
+    end = start + step,
+    from = null,
+    to = null
   } = {}) {
 
     this.headersConfig = headersConfig;
@@ -78,12 +80,13 @@ export default class SortableTable {
     this.step = step;
     this.start = start;
     this.end = end;
+    this.from = from;
+    this.to = to;
 
     this.render();
   }
 
   async render() {
-    console.log(this.url.toString());
     const {id, order} = this.sorted;
     const wrapper = document.createElement('div');
 
@@ -102,14 +105,18 @@ export default class SortableTable {
   }
 
   async loadData (id, order, start = this.start, end = this.end) {
-    console.log(this.url.toString());
+    // TODO: do this in a loop
+    if (this.from && this.to) {
+      this.url.searchParams.set('createdAt_gte', this.from);
+      this.url.searchParams.set('createdAt_lte', this.to);
+    }
     this.url.searchParams.set('_sort', id);
     this.url.searchParams.set('_order', order);
     this.url.searchParams.set('_start', start);
     this.url.searchParams.set('_end', end);
 
     this.element.classList.add('sortable-table_loading');
-    console.log(this.url.toString());
+    
 
     const data = await fetchJson(this.url);
 
