@@ -117,8 +117,13 @@ export default class SortableTable {
 
   addRows (data) {
     this.data = data;
-
     this.subElements.body.innerHTML = this.getTableRows(data);
+    
+    if (data.length) {
+      this.element.classList.remove('sortable-table_empty');
+    } else {
+      this.element.classList.add('sortable-table_empty');
+    }
   }
 
   update (data) {
@@ -131,6 +136,7 @@ export default class SortableTable {
     // console.time('timer');
     // this.subElements.body.insertAdjacentHTML('beforeend', rows.innerHTML);
     this.subElements.body.append(...rows.childNodes);
+    return rows;
     // console.timeEnd('timer');
   }
 
@@ -200,7 +206,7 @@ export default class SortableTable {
         <div data-element="loading" class="loading-line sortable-table__loading-line"></div>
 
         <div data-element="emptyPlaceholder" class="sortable-table__empty-placeholder">
-          No products
+          No data
         </div>
       </div>`;
   }
