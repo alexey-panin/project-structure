@@ -105,7 +105,6 @@ export default class SortableTable {
   }
 
   async loadData (id, order, start = this.start, end = this.end) {
-    // TODO: do this in a loop
     if (this.from && this.to) {
       this.url.searchParams.set('createdAt_gte', this.from);
       this.url.searchParams.set('createdAt_lte', this.to);
