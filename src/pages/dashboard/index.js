@@ -57,20 +57,20 @@ export default class Page {
     const ordersChart = new ColumnChart({
       data: ordersData,
       label: 'orders',
-      value: ordersData.reduce((accum, item) => accum + item),
+      value: ordersData.reduce((accum, item) => accum + item, 0),
       link: '#'
     });
 
     const salesChart = new ColumnChart({
       data: salesData,
       label: 'sales',
-      value: '$' + salesData.reduce((accum, item) => accum + item),
+      value: '$' + salesData.reduce((accum, item) => accum + item, 0),
     });
 
     const customersChart = new ColumnChart({
       data: customersData,
       label: 'customers',
-      value: customersData.reduce((accum, item) => accum + item),
+      value: customersData.reduce((accum, item) => accum + item, 0),
     });
 
     this.components.sortableTable = sortableTable;
