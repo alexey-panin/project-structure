@@ -92,6 +92,7 @@ export default class ProductForm {
     let response;
 
     try {
+
       response = await fetchJson('https://api.imgur.com/3/image', {
         method: 'POST',
         headers:             {
@@ -100,13 +101,17 @@ export default class ProductForm {
         body: formData,
       });
       this.showNotificationMessage(`Image upload succeeded!`, {type: "success"});
-    } catch (err) {
-      this.showNotificationMessage(`Upload to the server failed! Please try again later! ${err}`, {type: "error", duration: 3000});
-    } finally {
-      uploadImageButton.classList.remove("is-loading");
-    }
+      this.appendUploadedImageToSortableList(file, response);
 
-    this.appendUploadedImageToSortableList(file, response);
+    } catch (err) {
+
+      this.showNotificationMessage(`Upload to the server failed! Please try again later! ${err}`, {type: "error", duration: 3000});
+
+    } finally {
+
+      uploadImageButton.classList.remove("is-loading");
+
+    }
   }
 
   showNotificationMessage(message, {duration = 2000, type} = {}) {
@@ -123,16 +128,20 @@ export default class ProductForm {
 
     const {firstElementChild: sortableImageList} = this.subElements.imageListContainer;
 
-    sortableImageList.insertAdjacentHTML('beforeend', this.getSortableImageListRowTemplate(
+    const images = [
       {
-        images: [
-          {
-            url: link,
-            source: fileName,
-          }
-        ]
-      })
-    );
+        url: link,
+        source: fileName
+      }
+    ];
+
+    const items = images.map(({url, source}) => this.getImageItem(url, source));
+
+    const sortableList = new SortableList({
+      items
+    });
+
+    sortableImageList.append(sortableList.element);
   }
 
   onUploadImageButtonClick = (event) => {
@@ -237,7 +246,7 @@ export default class ProductForm {
         <form data-element="productForm" class="form-grid">
           ${this.getTitleTemplate(productData)}
           ${this.getDescriptionTemplate(productData)}
-          ${this.getSortableImageListContainerTemplate(productData)}
+          ${this.getSortableImageListContainerTemplate()}
           ${this.getProductCategoriesTemplate(categories, productData)}
           ${this.getProductPriceDiscountTemplate(productData)}
           ${this.getProductQuantityTemplate(productData)}
@@ -272,7 +281,7 @@ export default class ProductForm {
     `;
   }
 
-  getSortableImageListContainerTemplate(productData) {
+  getSortableImageListContainerTemplate() {
     return `
       <div class="form-group form-group__wide" data-element="sortable-list-container">
         <label class="form-label">Фото</label>
