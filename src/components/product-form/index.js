@@ -1,4 +1,5 @@
 import SortableList from '../../components/sortable-list/index.js';
+import NotificationMessage from '../../components/notification/index.js';
 import escapeHtml from '../../utils/escape-html.js';
 import fetchJson from '../../utils/fetch-json.js';
 
@@ -98,13 +99,22 @@ export default class ProductForm {
         },
         body: formData,
       });
+      this.showNotificationMessage(`Image upload succeeded!`, {type: "success"});
     } catch (err) {
-      throw err;
+      this.showNotificationMessage(`Upload to the server failed! Please try again later! ${err}`, {type: "error", duration: 3000});
     } finally {
       uploadImageButton.classList.remove("is-loading");
     }
 
     this.appendUploadedImageToSortableList(file, response);
+  }
+
+  showNotificationMessage(message, {duration = 2000, type} = {}) {
+    const notificationMessage = new NotificationMessage(message, {
+      duration: duration,
+      type: type
+    });
+    notificationMessage.show();
   }
 
   appendUploadedImageToSortableList = (file, response) => {
