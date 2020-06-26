@@ -9,23 +9,13 @@ export default class Page {
   components = {};
 
   onDateSelect = async (event) => {
-    console.log(event);
     const { from, to } = event.detail;
     await this.updateTableComponent(from, to);
   }
 
   async updateTableComponent (from, to) {
     const data = await fetchJson(`${process.env.BACKEND_URL}api/rest/orders?createdAt_gte=${from.toISOString()}&createdAt_lte=${to.toISOString()}&_sort=createdAt&_order=desc&_start=0&_end=30`);
-/*     const rows = this.components.sortableTable.update(data);
-    console.log(this.subElements.body);
-    this.subElements.body.append(...rows.childNodes); */
-/*     const sortableTable = new SortableTable(header, {
-      url: `api/rest/orders?createdAt_gte=${from.toISOString()}&createdAt_lte=${to.toISOString()}&_sort=createdAt&_order=desc&_start=0&_end=30`
-    });
-
-    console.log(this.subElements); */
     this.components.sortableTable.addRows(data);
-    
   }
 
   async initComponents () {

@@ -1,6 +1,6 @@
 import fetchJson from "../../utils/fetch-json.js";
 
-const BACKEND_URL = 'https://course-js.javascript.ru';
+const BACKEND_URL = process.env.BACKEND_URL;
 
 export default class SortableTable {
   element;
@@ -83,6 +83,7 @@ export default class SortableTable {
   }
 
   async render() {
+    console.log(this.url.toString());
     const {id, order} = this.sorted;
     const wrapper = document.createElement('div');
 
@@ -101,12 +102,14 @@ export default class SortableTable {
   }
 
   async loadData (id, order, start = this.start, end = this.end) {
+    console.log(this.url.toString());
     this.url.searchParams.set('_sort', id);
     this.url.searchParams.set('_order', order);
     this.url.searchParams.set('_start', start);
     this.url.searchParams.set('_end', end);
 
     this.element.classList.add('sortable-table_loading');
+    console.log(this.url.toString());
 
     const data = await fetchJson(this.url);
 
@@ -118,7 +121,7 @@ export default class SortableTable {
   addRows (data) {
     this.data = data;
     this.subElements.body.innerHTML = this.getTableRows(data);
-    
+
     if (data.length) {
       this.element.classList.remove('sortable-table_empty');
     } else {
