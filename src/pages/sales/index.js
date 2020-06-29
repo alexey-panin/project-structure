@@ -16,6 +16,7 @@ export default class Page {
   async updateTableComponent (from, to) {
     const data = await fetchJson(`${process.env.BACKEND_URL}api/rest/orders?createdAt_gte=${from.toISOString()}&createdAt_lte=${to.toISOString()}&_sort=createdAt&_order=desc&_start=0&_end=30`);
     this.components.sortableTable.addRows(data);
+    // Preserve time range for server side sorting
     this.components.sortableTable.from = from.toISOString();
     this.components.sortableTable.to = to.toISOString();
   }

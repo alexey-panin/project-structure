@@ -80,6 +80,7 @@ export default class SortableTable {
     this.step = step;
     this.start = start;
     this.end = end;
+    //In ISO format, use Date.toISOString
     this.from = from;
     this.to = to;
 
