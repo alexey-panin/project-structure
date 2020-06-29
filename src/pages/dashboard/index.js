@@ -24,17 +24,20 @@ export default class Page {
   }
 
   async updateTableComponent (from, to) {
+
+    this.updateCssClass(["sortableTable"], "add", ["sortable-table_loading"]);
+
     const data = await fetchJson(`${process.env.BACKEND_URL}api/dashboard/bestsellers?_start=1&_end=20&from=${from.toISOString()}&to=${to.toISOString()}`);
     this.components.sortableTable.addRows(data);
+
+    this.updateCssClass(["sortableTable"], "remove", ["sortable-table_loading"]); 
   }
 
   async updateChartsComponents (from, to) {
     const columnChartNames = ["ordersChart", "salesChart", "customersChart"];
+    const cssClassList = ["column-chart_loading"];
 
-    for (const columnChartName of columnChartNames) {
-      const {element} = this.components[columnChartName];
-      element.classList.add("column-chart_loading");
-    }
+    this.updateCssClass(columnChartNames, "add", cssClassList);
 
     const [ordersData, salesData, customersData] = await this.getDataForColumnCharts(from, to);
     const ordersDataTotal = ordersData.reduce((accum, item) => accum + item, 0);
@@ -45,9 +48,30 @@ export default class Page {
     this.components.salesChart.update({headerData: '$' + salesDataTotal, bodyData: salesData});
     this.components.customersChart.update({headerData: customersDataTotal, bodyData: customersData});
 
-    for (const columnChartName of columnChartNames) {
-      const {element} = this.components[columnChartName];
-      element.classList.remove("column-chart_loading");
+    this.updateCssClass(columnChartNames, "remove", cssClassList);
+  }
+
+  /**
+   * Adds or removes css class(es) from component(s)
+   * 
+   * @param {array} componentNamesList 
+   * @param {string} action ['add' | 'remove']
+   * @param {array} classNameList 
+   */
+  updateCssClass(componentNamesList, action, classNameList) {
+    for (const componentName of componentNamesList) {
+      const {element} = this.components[componentName];
+
+      for (const className of classNameList) {
+        switch (action) {
+          case "add":
+            element.classList.add(className);
+            break;
+          case "remove":
+            element.classList.remove(className);
+            break;
+        }
+      }
     }
   }
 

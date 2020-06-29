@@ -45,7 +45,7 @@ export default class Page {
   }
 
   get template () {
-    return `<div class="dashboard">
+    return `<div class="sales">
       <div class="content__top-panel">
         <h2 class="page-title">Sales</h2>
         <!-- RangePicker component -->
