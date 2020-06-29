@@ -29,6 +29,13 @@ export default class Page {
   }
 
   async updateChartsComponents (from, to) {
+    const columnChartNames = ["ordersChart", "salesChart", "customersChart"];
+
+    for (const columnChartName of columnChartNames) {
+      const {element} = this.components[columnChartName];
+      element.classList.add("column-chart_loading");
+    }
+
     const [ordersData, salesData, customersData] = await this.getDataForColumnCharts(from, to);
     const ordersDataTotal = ordersData.reduce((accum, item) => accum + item, 0);
     const salesDataTotal = salesData.reduce((accum, item) => accum + item, 0);
@@ -37,6 +44,11 @@ export default class Page {
     this.components.ordersChart.update({headerData: ordersDataTotal, bodyData: ordersData});
     this.components.salesChart.update({headerData: '$' + salesDataTotal, bodyData: salesData});
     this.components.customersChart.update({headerData: customersDataTotal, bodyData: customersData});
+
+    for (const columnChartName of columnChartNames) {
+      const {element} = this.components[columnChartName];
+      element.classList.remove("column-chart_loading");
+    }
   }
 
   async initComponents () {

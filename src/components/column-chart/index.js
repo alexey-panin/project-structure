@@ -57,11 +57,10 @@ export default class ColumnChart {
     const element = document.createElement('div');
 
     element.innerHTML = this.template;
+
     this.element = element.firstElementChild;
 
-    if (this.data.length) {
-      this.element.classList.remove(`column-chart_loading`);
-    }
+    this.element.classList.remove(`column-chart_loading`);
 
     this.subElements = this.getSubElements(this.element);
 
@@ -81,12 +80,6 @@ export default class ColumnChart {
   update ({headerData, bodyData}) {
     this.subElements.header.textContent = headerData;
     this.subElements.body.innerHTML = this.getColumnBody(bodyData);
-
-    if (bodyData.length) {
-      this.element.classList.remove("column-chart_loading");
-    } else {
-      this.element.classList.add("column-chart_loading");
-    }
   }
 
   destroy() {
