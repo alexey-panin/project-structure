@@ -80,6 +80,8 @@ export default class DoubleSlider {
   } = {}) {
     this.min = min;
     this.max = max;
+    this.originalMin = this.min;
+    this.originalMax = this.max;
     this.formatValue = formatValue;
     this.selected = selected;
 
@@ -156,6 +158,20 @@ export default class DoubleSlider {
 
     thumbLeft.style.left = left;
     thumbRight.style.right = right;
+  }
+
+  reset() {
+    const { from, to } = this.subElements;
+
+    this.min = this.originalMin;
+    this.selected.from = this.originalMin;
+    from.innerHTML = this.formatValue(this.originalMin);
+
+    this.max = this.originalMax;
+    this.selected.to = this.originalMax;
+    to.innerHTML = this.formatValue(this.originalMax);
+
+    this.update();
   }
 
   onThumbPointerDown(event) {

@@ -10,10 +10,12 @@ export default class Page {
   element;
   subElements = {};
   components = {};
-  sliderFrom = 0;
-  sliderTo = 4000;
+  sliderOriginalFrom = 0;
+  sliderOriginalTo = 4000;
+  sliderFrom = this.sliderOriginalFrom;
+  sliderTo = this.sliderOriginalTo;
 
-  updateTableComponent = async (event) => {
+  filterProducts = async (event) => {
     const { type, detail } = event;
 
     if (type === "range-select") {
@@ -67,6 +69,23 @@ export default class Page {
     this.components.sortableTable.addRows(data);
 
     sortableTableElem.classList.remove("sortable-table_loading");
+  }
+
+  resetFilters = (event) => {
+    event.preventDefault();
+
+    const { subElements, components } = this.components.sortPanel;
+    const { filterName, filterStatus } = subElements;
+    const { doubleSlider } = components;
+
+    filterName.value = "";
+    filterStatus.value = "";
+    this.sliderFrom = this.sliderOriginalFrom;
+    this.sliderTo = this.sliderOriginalTo;
+    
+    doubleSlider.reset();
+
+    this.filterProducts(event);
   }
 
   async initComponents () {
@@ -124,12 +143,15 @@ export default class Page {
   initEventListeners() {
     const { subElements } = this.components.sortPanel;
     const { filterName, filterStatus } = subElements;
+    const resetFiltersButton = this.element.querySelector(".button-primary-outline");
 
     for (const element of [filterName, filterStatus]) {
-      element.addEventListener("input", this.updateTableComponent);
+      element.addEventListener("input", this.filterProducts);
     }
 
-    this.element.addEventListener("range-select", this.updateTableComponent);
+    resetFiltersButton.addEventListener("click", this.resetFilters);
+
+    this.element.addEventListener("range-select", this.filterProducts);
   }
 
   removeEventListeners() {
@@ -137,10 +159,12 @@ export default class Page {
     const { filterName, filterStatus } = subElements;
 
     for (const element of [filterName, filterStatus]) {
-      element.removeEventListener("input", this.updateTableComponent);
+      element.removeEventListener("input", this.filterProducts);
     }
 
-    this.element.removeEventListener("range-select", this.updateTableComponent);
+    resetFiltersButton.removeEventListener("click", this.resetFilters);
+
+    this.element.removeEventListener("range-select", this.filterProducts);
   }
 
   modifyEmptyPlaceholder() {
