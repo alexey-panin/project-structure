@@ -20,7 +20,12 @@ export default class Page {
       const { from, to } = detail;
       this.sliderFrom = from;
       this.sliderTo = to;
-    }    
+    }
+    
+    // reset these values each time a filter is added or changed
+    // in order to load data with filter each time from the beginning
+    this.components.sortableTable.start = 1;
+    this.components.sortableTable.end = 1 + this.components.sortableTable.step;
     
     const { sorted, start, end, element: sortableTableElem } = this.components.sortableTable;
     const { id, order } = sorted;
