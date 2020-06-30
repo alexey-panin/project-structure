@@ -54,7 +54,9 @@ export default class SortableTable {
       if (this.isSortLocally) {
         this.sortLocally(id, newOrder);
       } else {
-        this.sortOnServer(id, newOrder, 1, 1 + this.step);
+        this.start = 1;
+        this.end = 1 + this.step;
+        this.sortOnServer(id, newOrder, this.start, this.end);
       }
     }
   };
