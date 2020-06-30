@@ -23,7 +23,7 @@ export default class Page {
     }    
     
     const { sorted, start, end, element: sortableTableElem } = this.components.sortableTable;
-    const { id: sort, order } = sorted;
+    const { id, order } = sorted;
     
     sortableTableElem.classList.add("sortable-table_loading");
     
@@ -32,51 +32,30 @@ export default class Page {
     const { value: filterNameValue } = filterName;
     const { value: filterStatusValue } = filterStatus;
 
- 
-
     const url = new URL(PRODUCTS_URL, BACKEND_URL);
 
-    const searchParams = [
-      ["price_gte", this.sliderFrom],
-      ["price_lte", this.sliderTo]
-    ];
+    url.searchParams.set("price_gte", this.sliderFrom);
+    url.searchParams.set("price_lte", this.sliderTo);
 
     if (filterNameValue) {
-      searchParams.push(
-        ["title_like", filterNameValue]
-      )
+      url.searchParams.set("title_like", filterNameValue);
     }
 
     if (filterStatusValue) {
-      searchParams.push(
-        ["status", filterStatusValue]
-      )
+      url.searchParams.set("status", filterStatusValue);
     }
 
-    //TODO: сделать через цикл
-
-    searchParams.push([
-      "_sort",
-      sort
-    ]);
-
-    searchParams.push([
-      "_order",
-      order
-    ]);
-
-    searchParams.push([
-      "_start",
-      start
-    ]);
-
-    searchParams.push([
-      "_end",
-      end
-    ]);
-
-    for (const [name, value] of searchParams) {
-      url.searchParams.set(name, value);
+    url.searchParams.set('_sort', id);
+    url.searchParams.set('_order', order);
+    url.searchParams.set('_start', start);
+    url.searchParams.set('_end', end);
+    
+    //preserve this for server side sorting and for onscroll loading
+    this.components.sortableTable.filtered = {
+      "price_gte": this.sliderFrom,
+      "price_lte": this.sliderTo,
+      "title_like": filterNameValue,
+      "status": filterStatusValue
     }
 
     const data = await fetchJson(url);

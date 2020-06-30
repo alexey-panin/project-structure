@@ -70,7 +70,8 @@ export default class SortableTable {
     start = 1,
     end = start + step,
     from = null,
-    to = null
+    to = null,
+    filtered = null,
   } = {}) {
 
     this.headersConfig = headersConfig;
@@ -83,6 +84,7 @@ export default class SortableTable {
     //In ISO format, use Date.toISOString
     this.from = from;
     this.to = to;
+    this.filtered = filtered;
 
     this.render();
   }
@@ -110,6 +112,23 @@ export default class SortableTable {
       this.url.searchParams.set('createdAt_gte', this.from);
       this.url.searchParams.set('createdAt_lte', this.to);
     }
+
+    if (this.filtered) {
+      const { price_gte, price_lte, title_like, status } = this.filtered;
+
+      this.url.searchParams.set('price_gte', price_gte);
+      this.url.searchParams.set('price_lte', price_lte);
+      
+      if (title_like) {
+        this.url.searchParams.set('title_like', title_like);
+      }
+
+      if (status) {
+        this.url.searchParams.set('status', status);
+      }
+
+    }
+
     this.url.searchParams.set('_sort', id);
     this.url.searchParams.set('_order', order);
     this.url.searchParams.set('_start', start);
@@ -212,7 +231,12 @@ export default class SortableTable {
         <div data-element="loading" class="loading-line sortable-table__loading-line"></div>
 
         <div data-element="emptyPlaceholder" class="sortable-table__empty-placeholder">
-          No data
+          ${(this.filtered)
+          ? `<div>
+              <p>Не найдено товаров удовлетворяющих выбранному критерию</p>
+              <button type="button" class="button-primary-outline">Очистить фильтры</button>
+            </div>`
+          : "No data"}
         </div>
       </div>`;
   }
