@@ -233,12 +233,7 @@ export default class SortableTable {
         <div data-element="loading" class="loading-line sortable-table__loading-line"></div>
 
         <div data-element="emptyPlaceholder" class="sortable-table__empty-placeholder">
-          ${(this.filtered)
-          ? `<div>
-              <p>Не найдено товаров удовлетворяющих выбранному критерию</p>
-              <button type="button" class="button-primary-outline">Очистить фильтры</button>
-            </div>`
-          : "No data"}
+          No data
         </div>
       </div>`;
   }

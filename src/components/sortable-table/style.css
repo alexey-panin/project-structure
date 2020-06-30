@@ -111,6 +111,7 @@
   align-items: center;
   justify-content: center;
   color: var(--grey);
+  text-align: center;
 }
 
 .sortable-table-image {

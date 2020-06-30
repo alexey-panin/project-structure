@@ -114,6 +114,8 @@ export default class Page {
 
     this.renderComponents();
 
+    this.modifyEmptyPlaceholder();
+
     this.initEventListeners();
 
     return this.element;
@@ -139,6 +141,17 @@ export default class Page {
     }
 
     this.element.removeEventListener("range-select", this.updateTableComponent);
+  }
+
+  modifyEmptyPlaceholder() {
+    const { subElements } = this.components.sortableTable;
+    const { emptyPlaceholder } = subElements;
+    emptyPlaceholder.innerHTML = `
+      <div>
+        <p>Не найдено товаров удовлетворяющих выбранному критерию</p>
+        <button type="button" class="button-primary-outline">Очистить фильтры</button>
+      </div>
+    `;
   }
 
   renderComponents () {
