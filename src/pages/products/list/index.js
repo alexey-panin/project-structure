@@ -1,4 +1,5 @@
 import SortableTable from '../../../components/sortable-table/index.js';
+import SortPanel from '../../../components/sort-panel/index.js';
 import header from './products-header.js';
 
 //import fetchJson from '../../../utils/fetch-json.js';
@@ -12,10 +13,13 @@ export default class Page {
     const to = new Date();
     const from = new Date(to.getTime() - (30 * 24 * 60 * 60 * 1000));
 
+    const sortPanel = new SortPanel();
+
     const sortableTable = new SortableTable(header, {
       url: `api/rest/products?_embed=subcategory.category&_sort=title&_order=asc&_start=0&_end=30`
     });
 
+    this.components.sortPanel = sortPanel;
     this.components.sortableTable = sortableTable;
   }
 
@@ -25,6 +29,9 @@ export default class Page {
       <div class="content__top-panel">
         <h1 class="page-title">Товары</h1>
         <a href="/products/add" class="button-primary">Добавить товар</a>
+      </div>
+      <div data-element="sortPanel">
+        <!-- sort-panel component -->
       </div>
       <div data-element="sortableTable">
         <!-- sortable-table component -->

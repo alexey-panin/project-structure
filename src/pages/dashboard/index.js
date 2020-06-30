@@ -36,7 +36,6 @@ export default class Page {
   async updateChartsComponents (from, to) {
     const columnChartNames = ["ordersChart", "salesChart", "customersChart"];
     const cssClassList = ["column-chart_loading"];
-
     this.updateCssClass(columnChartNames, "add", cssClassList);
 
     const [ordersData, salesData, customersData] = await this.getDataForColumnCharts(from, to);
