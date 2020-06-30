@@ -157,6 +157,7 @@ export default class Page {
   removeEventListeners() {
     const { subElements } = this.components.sortPanel;
     const { filterName, filterStatus } = subElements;
+    const resetFiltersButton = this.element.querySelector(".button-primary-outline");
 
     for (const element of [filterName, filterStatus]) {
       element.removeEventListener("input", this.filterProducts);
@@ -198,9 +199,9 @@ export default class Page {
   }
 
   destroy () {
+    this.removeEventListeners(); 
     for (const component of Object.values(this.components)) {
       component.destroy();
     }
-    this.removeEventListeners();
   }
 }
