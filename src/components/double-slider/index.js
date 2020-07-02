@@ -11,32 +11,22 @@ export default class DoubleSlider {
     const { left: innerLeft, right: innerRight, width } = inner.getBoundingClientRect();
 
     if (this.dragging === thumbLeft) {
-      // Рассчитываем положение "левого" ползунка в пропорциональном соотношении к длине слайдера
       let newLeft = (event.clientX - innerLeft + this.shiftX) / width;
 
-      // Если вышли за пределы левой границы - сбросили положение ползунка в 0
       if (newLeft < MIN_PERCENTAGE) {
         newLeft = MIN_PERCENTAGE;
       }
 
-      // Переводим положение "левого" ползунка в проценты
       newLeft *= MAX_PERCENTAGE;
 
-      // Получаем положение "правого" ползунка
       const right = parseFloat(thumbRight.style.right);
 
-      // Уменьшаем значение "левого" ползунка, если вышли за пределы 100-тов
       if (newLeft + right > MAX_PERCENTAGE) {
         newLeft = MAX_PERCENTAGE - right;
       }
 
-      // изменяем позицию перетаскиваемого ползунка
-      // на изображении отмечено знаком "*" | start ----*=========*----- end |
       this.dragging.style.left = `${newLeft}%`;
-      // изменяем полосу "прогресса" - индикатора выбранного диапазона
-      // на изображении отмечено знаком "=" | start ----*=========*----- end |
       progress.style.left = `${newLeft}%`;
-      // обновляем значение "start" выбранного диапазона | start ----*=========*----- end |
       from.innerHTML = this.formatValue(this.getValue().from);
     } else {
       let newRight = (innerRight - event.clientX - this.shiftX) / width;
@@ -112,10 +102,8 @@ export default class DoubleSlider {
 
     this.subElements = this.getSubElements(element);
 
-    // Инициализируем обработчики событий
     this.initEventListeners();
 
-    // Инициализируем начальные положения "ползунков"
     this.update();
   }
 
@@ -149,7 +137,6 @@ export default class DoubleSlider {
   update() {
     const { progress, thumbLeft, thumbRight } = this.subElements;
     const rangeTotal = this.max - this.min;
-    // Переводим абсолютные значения в процентные
     const left = Math.floor((this.selected.from - this.min) / rangeTotal * 100) + '%';
     const right = Math.floor((this.max - this.selected.to) / rangeTotal * 100) + '%';
 
@@ -201,7 +188,6 @@ export default class DoubleSlider {
     const { left } = thumbLeft.style;
     const { right } = thumbRight.style;
 
-    // Преобразовываем процентные значения в абсолютные
     const from = Math.round(this.min + parseFloat(left) * 0.01 * rangeTotal);
     const to = Math.round(this.max - parseFloat(right) * 0.01 * rangeTotal);
 
