@@ -3,11 +3,13 @@ import fetchJson from '../../utils/fetch-json.js';
 import SortableList from '../../components/sortable-list/index.js';
 import NotificationMessage from '../../components/notification/index.js';
 
-const BACKEND_URL = process.env.BACKEND_URL;
-const SUBCATEGORIES_URL = "api/rest/subcategories";
+// данные переменные используются в одном месте в компоненте, поэтому нет необходимости
+// их выносить за пределы компонента
+// const BACKEND_URL = process.env.BACKEND_URL;
+// const SUBCATEGORIES_URL = "api/rest/subcategories";
 
 export default class Categories {
-  
+
   element; //html element
 
   toggleAccordion = (event) => {
@@ -36,6 +38,19 @@ export default class Categories {
         }
       );
     });
+    // можно использовать map для краткости
+
+    /*
+    const payload = [...children].map((child, index) => {
+      const { id } = child.dataset;
+
+      return {
+        id,
+        weight: index
+      };
+    });
+    */
+
 
     try {
       await this.send(payload);
@@ -59,7 +74,7 @@ export default class Categories {
   }
 
   async send(payload) {
-    const url = new URL (SUBCATEGORIES_URL, BACKEND_URL);
+    const url = new URL ('api/rest/subcategories', process.env.BACKEND_URL);
     const requestParams = {
       method: 'PATCH',
       headers:             {
@@ -121,6 +136,8 @@ export default class Categories {
   createSubcategoryList() {
     const itemsList = [];
 
+    // также можно заменить `forEach` на `map` - тогда не прийдется создавать отдельную переменную
+    // itemsList
     this.data.forEach(element => {
       const {subcategories} = element;
       const items = subcategories.map(({ id, title, count }) => this.getSortableListItemTemplate(id, title, count));
@@ -146,6 +163,8 @@ export default class Categories {
     const subcategotyListArr = this.createSubcategoryList();
     const subcategoryElementArr = this.element.querySelectorAll("[data-element='subcategoryList']");
 
+    // метод querySelectorAll возвращает NodeList, в отличии от HTMLCollection,
+    // NodeList имеет метод forEach - который требует меньшего количества кода в отличии от for..
     for (let i=0; i < subcategoryElementArr.length; i++) {
       const sortableList = new SortableList({ items: subcategotyListArr[i] });
       subcategoryElementArr[i].append(sortableList.element);

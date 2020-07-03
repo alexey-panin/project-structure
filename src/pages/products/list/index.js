@@ -3,9 +3,6 @@ import SortPanel from '../../../components/sort-panel/index.js';
 import header from './products-header.js';
 import fetchJson from '../../../utils/fetch-json.js';
 
-const BACKEND_URL = process.env.BACKEND_URL;
-const PRODUCTS_URL = "api/rest/products";
-
 export default class Page {
   element;
   subElements = {};
@@ -17,29 +14,31 @@ export default class Page {
 
   filterProducts = async (event) => {
     const { type, detail } = event;
+    // не забываем про деструкцию
+    const { sortableTable } = this.components;
 
     if (type === "range-select") {
       const { from, to } = detail;
       this.sliderFrom = from;
       this.sliderTo = to;
     }
-    
+
     // reset these values each time a filter is added or changed
     // in order to load data with filter each time from the beginning
-    this.components.sortableTable.start = 1;
-    this.components.sortableTable.end = 1 + this.components.sortableTable.step;
-    
-    const { sorted, start, end, element: sortableTableElem } = this.components.sortableTable;
+    sortableTable.start = 1;
+    sortableTable.end = 1 + sortableTable.step;
+
+    const { sorted, start, end, element: sortableTableElem } = sortableTable;
     const { id, order } = sorted;
-    
+
     sortableTableElem.classList.add("sortable-table_loading");
-    
+
     const { subElements } = this.components.sortPanel;
     const { filterName, filterStatus } = subElements;
     const { value: filterNameValue } = filterName;
     const { value: filterStatusValue } = filterStatus;
 
-    const url = new URL(PRODUCTS_URL, BACKEND_URL);
+    const url = new URL('api/rest/products', process.env.BACKEND_URL);
 
     url.searchParams.set("price_gte", this.sliderFrom);
     url.searchParams.set("price_lte", this.sliderTo);
@@ -56,9 +55,9 @@ export default class Page {
     url.searchParams.set('_order', order);
     url.searchParams.set('_start', start);
     url.searchParams.set('_end', end);
-    
+
     //preserve this for server side sorting and for onscroll loading
-    this.components.sortableTable.filtered = {
+    sortableTable.filtered = {
       "price_gte": this.sliderFrom,
       "price_lte": this.sliderTo,
       "title_like": filterNameValue,
@@ -66,7 +65,7 @@ export default class Page {
     }
 
     const data = await fetchJson(url);
-    this.components.sortableTable.addRows(data);
+    sortableTable.addRows(data);
 
     sortableTableElem.classList.remove("sortable-table_loading");
   }
@@ -80,18 +79,16 @@ export default class Page {
 
     filterName.value = "";
     filterStatus.value = "";
+
     this.sliderFrom = this.sliderOriginalFrom;
     this.sliderTo = this.sliderOriginalTo;
-    
+
     doubleSlider.reset();
 
     this.filterProducts(event);
   }
 
   async initComponents () {
-    const to = new Date();
-    const from = new Date(to.getTime() - (30 * 24 * 60 * 60 * 1000));
-
     const sortPanel = new SortPanel({
       sliderMin: this.sliderFrom,
       sliderMax: this.sliderTo
@@ -171,6 +168,7 @@ export default class Page {
   modifyEmptyPlaceholder() {
     const { subElements } = this.components.sortableTable;
     const { emptyPlaceholder } = subElements;
+
     emptyPlaceholder.innerHTML = `
       <div>
         <p>Не найдено товаров удовлетворяющих выбранному критерию</p>
@@ -199,7 +197,8 @@ export default class Page {
   }
 
   destroy () {
-    this.removeEventListeners(); 
+    this.removeEventListeners();
+
     for (const component of Object.values(this.components)) {
       component.destroy();
     }
