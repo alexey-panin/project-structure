@@ -14,15 +14,21 @@ export default class Page {
   }
 
   async updateTableComponent (from, to) {
+    // здесь было бы неплохо собрать url через new URL и searchParams.set - тогда можно
+    // избавиться от длинной колбасы-строки
+
     const data = await fetchJson(`${process.env.BACKEND_URL}api/rest/orders?createdAt_gte=${from.toISOString()}&createdAt_lte=${to.toISOString()}&_sort=createdAt&_order=desc&_start=0&_end=30`);
-    this.components.sortableTable.addRows(data);
+    const { sortableTable } = this.components;
+
+    sortableTable.addRows(data);
     // Preserve time range for server side sorting
-    this.components.sortableTable.from = from.toISOString();
-    this.components.sortableTable.to = to.toISOString();
+    sortableTable.from = from.toISOString();
+    sortableTable.to = to.toISOString();
   }
 
   async initComponents () {
     const to = new Date();
+    // было бы неплохо вынести в переменную 30 * 24 * 60 * 60 * 1000
     const from = new Date(to.getTime() - (30 * 24 * 60 * 60 * 1000));
 
     const rangePicker = new RangePicker({

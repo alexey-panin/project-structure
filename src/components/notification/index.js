@@ -4,7 +4,7 @@ export default class NotificationMessage {
   element; // HTMLElement;
 
   constructor(
-    message, 
+    message,
     {
       duration,
       type
@@ -12,7 +12,7 @@ export default class NotificationMessage {
     this.message = message;
     this.duration = duration;
     this.type = type;
-    
+
     this.render();
   }
 
@@ -27,12 +27,12 @@ export default class NotificationMessage {
   }
 
   render() {
-
     if (NotificationMessage.activeComponent) {
       NotificationMessage.activeComponent.remove();
     }
 
     const element = document.createElement('div');
+
     element.innerHTML = this.template;
     this.element = element.firstElementChild;
     NotificationMessage.activeComponent = this.element;

@@ -1,9 +1,6 @@
 import Categories from '../../components/categories/index.js';
 import fetchJson from '../../utils/fetch-json.js';
 
-const BACKEND_URL = process.env.BACKEND_URL;
-const CATEGORIES_URL = "api/rest/categories";
-
 export default class Page {
   element;
   subElements = {};
@@ -11,16 +8,16 @@ export default class Page {
   data = {};
 
   async getData () {
-    const fetchUrl = new URL(CATEGORIES_URL, BACKEND_URL);
+    const fetchUrl = new URL('api/rest/categories', process.env.BACKEND_URL);
+
     fetchUrl.searchParams.set("_sort", "weight");
     fetchUrl.searchParams.set("_refs", "subcategory");
+
     this.data = await fetchJson(fetchUrl);
   }
 
   initComponents () {
-
-    const categories = new Categories(this.data);
-    this.components.categories = categories;
+    this.components.categories = new Categories(this.data);
   }
 
   get template () {
@@ -41,7 +38,7 @@ export default class Page {
     element.innerHTML = this.template;
 
     this.element = element.firstElementChild;
-    
+
     this.subElements = this.getSubElements(this.element);
 
     await this.getData();

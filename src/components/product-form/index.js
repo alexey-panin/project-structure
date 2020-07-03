@@ -3,6 +3,8 @@ import NotificationMessage from '../../components/notification/index.js';
 import escapeHtml from '../../utils/escape-html.js';
 import fetchJson from '../../utils/fetch-json.js';
 
+// используются в компоненте только один раз
+// можно эти значения не выносить в отдельные переменные
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID;
 const BACKEND_URL = process.env.BACKEND_URL;
 
@@ -89,10 +91,10 @@ export default class ProductForm {
     const {lastElementChild: uploadImageButton} = this.subElements["sortable-list-container"];
     uploadImageButton.classList.add("is-loading");
 
+    // можно перенести внутрь try
     let response;
 
     try {
-
       response = await fetchJson('https://api.imgur.com/3/image', {
         method: 'POST',
         headers:             {
@@ -158,6 +160,7 @@ export default class ProductForm {
   }
 
   // TODO: check if it is a good place for url param or it should be put outside of class
+  // да, лучше не использовать это значение в качестве дефолтного
   constructor(productId, url = "api/rest/products") {
     this.productId = productId;
     this.productEditMode = Boolean(this.productId);
@@ -166,7 +169,6 @@ export default class ProductForm {
   }
 
   async render() {
-
     const wrapper = document.createElement('div');
 
     [this.categories, this.productData] = await this.getAllData(this.productEditMode);
@@ -176,6 +178,16 @@ export default class ProductForm {
     } else {
       wrapper.innerHTML = this.getCreateProductFormTemplate(this.categories);
     }
+    // можно немного оптимизировать код выше
+    /*
+    const params = [this.productData];
+
+    if (this.productEditMode) {
+      params.push(this.categories);
+    }
+
+    wrapper.innerHTML = this.getEditProductFormTemplate(...params);
+    */
 
     const element = wrapper.firstElementChild;
 
@@ -216,6 +228,8 @@ export default class ProductForm {
     const fetchUrl = this.getFetchUrl(url, searchQueryParams);
     const response = await fetchJson(fetchUrl);
     return response;
+    // можно сразу
+    // return await fetchJson(fetchUrl);
   }
 
   getFetchUrl(url, searchQueryParams) {
@@ -297,6 +311,8 @@ export default class ProductForm {
     if (productData) {
       ({subcategory: productSubcategory} = productData);
     }
+
+    // старайтесь избегать вложенных map
     return `
       <div class="form-group form-group__half_left">
         <label class="form-label">Категория</label>
@@ -352,9 +368,17 @@ export default class ProductForm {
   }
 
   createImagesList() {
+    // я бы рекомендовал заменить на обратный if и поместить логику в него
+    /*
+    if (this.productData) {
+      // logic...
+    }
+    */
+
     if (!this.productData) {
       return;
-    };
+    }
+
     const {imageListContainer} = this.subElements;
     const [productData] = this.productData;
     const {images} = productData;

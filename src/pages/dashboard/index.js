@@ -30,7 +30,7 @@ export default class Page {
     const data = await fetchJson(`${process.env.BACKEND_URL}api/dashboard/bestsellers?_start=1&_end=20&from=${from.toISOString()}&to=${to.toISOString()}`);
     this.components.sortableTable.addRows(data);
 
-    this.updateCssClass(["sortableTable"], "remove", ["sortable-table_loading"]); 
+    this.updateCssClass(["sortableTable"], "remove", ["sortable-table_loading"]);
   }
 
   async updateChartsComponents (from, to) {
@@ -52,10 +52,10 @@ export default class Page {
 
   /**
    * Adds or removes css class(es) from component(s)
-   * 
-   * @param {array} componentNamesList 
+   *
+   * @param {array} componentNamesList
    * @param {string} action ['add' | 'remove']
-   * @param {array} classNameList 
+   * @param {array} classNameList
    */
   updateCssClass(componentNamesList, action, classNameList) {
     for (const componentName of componentNamesList) {
@@ -76,7 +76,8 @@ export default class Page {
 
   async initComponents () {
     const to = new Date();
-    const from = new Date(to.getTime() - (30 * 24 * 60 * 60 * 1000));
+    const MILLISECONDS_IN_MONTH = 30 * 24 * 60 * 60 * 1000;
+    const from = new Date(to.getTime() - MILLISECONDS_IN_MONTH);
     const [ordersData, salesData, customersData] = await this.getDataForColumnCharts(from, to);
 
     const rangePicker = new RangePicker({
