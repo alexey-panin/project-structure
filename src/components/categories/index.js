@@ -3,11 +3,8 @@ import fetchJson from '../../utils/fetch-json.js';
 import SortableList from '../../components/sortable-list/index.js';
 import NotificationMessage from '../../components/notification/index.js';
 
-const BACKEND_URL = process.env.BACKEND_URL;
-const SUBCATEGORIES_URL = "api/rest/subcategories";
-
 export default class Categories {
-  
+
   element; //html element
 
   toggleAccordion = (event) => {
@@ -25,16 +22,13 @@ export default class Categories {
     const { target } = event;
     const { children } = target;
 
-    const payload = [];
+    const payload = [...children].map((child, index) => {
+      const { id } = child.dataset;
 
-    [...children].forEach((child, index) => {
-      const childId = child.dataset.id;
-      payload.push(
-        {
-          id: childId,
-          weight: index
-        }
-      );
+      return {
+        id,
+        weight: index
+      };
     });
 
     try {
@@ -59,7 +53,7 @@ export default class Categories {
   }
 
   async send(payload) {
-    const url = new URL (SUBCATEGORIES_URL, BACKEND_URL);
+    const url = new URL ('api/rest/subcategories', process.env.BACKEND_URL);
     const requestParams = {
       method: 'PATCH',
       headers:             {
@@ -119,15 +113,12 @@ export default class Categories {
   }
 
   createSubcategoryList() {
-    const itemsList = [];
-
-    this.data.forEach(element => {
-      const {subcategories} = element;
-      const items = subcategories.map(({ id, title, count }) => this.getSortableListItemTemplate(id, title, count));
-      itemsList.push(items);
-    });
-
-    return itemsList;
+    return this.data
+      .map(element => {
+        const { subcategories } = element;
+        const items = subcategories.map(({ id, title, count }) => this.getSortableListItemTemplate(id, title, count));
+        return items;
+      });
   }
 
   getSortableListItemTemplate(id, title, count) {
@@ -146,10 +137,11 @@ export default class Categories {
     const subcategotyListArr = this.createSubcategoryList();
     const subcategoryElementArr = this.element.querySelectorAll("[data-element='subcategoryList']");
 
-    for (let i=0; i < subcategoryElementArr.length; i++) {
-      const sortableList = new SortableList({ items: subcategotyListArr[i] });
-      subcategoryElementArr[i].append(sortableList.element);
-    }
+    subcategoryElementArr.forEach((subcategoryElement, index) => {
+      const sortableList = new SortableList({ items: subcategotyListArr[index] });
+
+      subcategoryElement.append(sortableList.element);
+    });
   }
 
   remove() {
